@@ -40,6 +40,25 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loginDirectly(String phone) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      // Mocking a successful login
+      _token = "dummy_token";
+      _user = UserModel(
+        id: "dev_id",
+        phone: phone,
+        name: "Test User",
+        role: "customer",
+        activeMode: "customer",
+      );
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
   void logout() {
     _token = null;
     _user = null;

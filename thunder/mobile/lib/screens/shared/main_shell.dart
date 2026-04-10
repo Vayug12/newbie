@@ -22,6 +22,7 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final mode = context.watch<ModeProvider>().isVendorMode;
 
     final customerTabs = [
@@ -41,25 +42,54 @@ class _MainShellState extends State<MainShell> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(mode ? "Vendor" : "Customer"),
-        actions: const [Padding(padding: EdgeInsets.only(right: 12), child: ModeSwitchChip())],
+        title: Text(
+          mode ? "Service Partner" : "Service Marketplace",
+          style: theme.textTheme.titleLarge?.copyWith(
+            letterSpacing: -0.5,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: ModeSwitchChip(),
+          )
+        ],
       ),
       body: tabs[_index.clamp(0, tabs.length - 1)],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _index.clamp(0, mode ? 3 : 2),
-        onTap: (value) => setState(() => _index = value),
-        items: mode
-            ? const [
-                BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Dashboard"),
-                BottomNavigationBarItem(icon: Icon(Icons.event_note), label: "Requests"),
-                BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-              ]
-            : const [
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-                BottomNavigationBarItem(icon: Icon(Icons.book_online), label: "Bookings"),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-              ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _index.clamp(0, tabs.length - 1),
+          onTap: (value) => setState(() => _index = value),
+          elevation: 0,
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: theme.colorScheme.primary,
+          unselectedItemColor: Colors.grey.shade400,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          items: mode
+              ? const [
+                  BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), activeIcon: Icon(Icons.dashboard), label: "Dash"),
+                  BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), activeIcon: Icon(Icons.notifications), label: "Inbox"),
+                  BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: "Earn"),
+                  BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: "Profile"),
+                ]
+              : const [
+                  BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
+                  BottomNavigationBarItem(icon: Icon(Icons.calendar_today_outlined), activeIcon: Icon(Icons.calendar_today), label: "Bookings"),
+                  BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: "Profile"),
+                ],
+        ),
       ),
     );
   }
