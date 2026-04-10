@@ -31,7 +31,7 @@ class ServiceMarketplaceApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Service Marketplace",
+        title: "newbie",
         theme: AppTheme.lightTheme,
         home: Consumer<AuthProvider>(
           builder: (_, auth, __) => auth.isLoggedIn ? const MainShell() : const LoginScreen(),

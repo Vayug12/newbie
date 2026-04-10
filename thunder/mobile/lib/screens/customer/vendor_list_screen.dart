@@ -5,39 +5,45 @@ import "../../providers/vendor_provider.dart";
 import "../../widgets/vendor_card.dart";
 import "vendor_detail_screen.dart";
 
-class VendorListScreen extends StatefulWidget {
+class VendorListScreen extends StatelessWidget {
   const VendorListScreen({super.key});
 
   @override
-  State<VendorListScreen> createState() => _VendorListScreenState();
-}
-
-class _VendorListScreenState extends State<VendorListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VendorProvider>().fetchVendors();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final provider = context.watch<VendorProvider>();
+    final vendors = context.watch<VendorProvider>().vendors;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Vendors")),
-      body: provider.loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: provider.vendors.length,
-              itemBuilder: (_, index) {
-                final vendor = provider.vendors[index];
+      appBar: AppBar(
+        title: const Text("Service Providers"),
+      ),
+      body: vendors.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off, size: 64, color: Colors.grey.shade300),
+                  const SizedBox(height: 16),
+                  Text(
+                    "No vendors found nearby",
+                    style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: vendors.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final vendor = vendors[index];
                 return VendorCard(
                   vendor: vendor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => VendorDetailScreen(vendorId: vendor.id, name: vendor.name)),
+                    MaterialPageRoute(
+                      builder: (_) => VendorDetailScreen(vendor: vendor),
+                    ),
                   ),
                 );
               },
