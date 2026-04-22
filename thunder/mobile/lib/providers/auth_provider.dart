@@ -1,3 +1,4 @@
+import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/material.dart";
 
 import "../models/user_model.dart";
@@ -31,7 +32,14 @@ class AuthProvider extends ChangeNotifier {
     _loading = true;
     notifyListeners();
     try {
-      final data = await _authService.verifyOtp(phone, otp);
+      String? fcmToken;
+      try {
+        fcmToken = await FirebaseMessaging.instance.getToken();
+      } catch (e) {
+        debugPrint("Error getting FCM token: $e");
+      }
+
+      final data = await _authService.verifyOtp(phone, otp, fcmToken: fcmToken);
       _token = data["data"]["token"];
       _user = UserModel.fromJson(data["data"]["user"]);
     } finally {
@@ -39,6 +47,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   Future<void> loginDirectly(String phone) async {
     _loading = true;

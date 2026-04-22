@@ -21,4 +21,32 @@ class BookingProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> createBooking({
+    required String token,
+    required String vendorId,
+    required String serviceId,
+    required String date,
+    required String time,
+  }) async {
+    loading = true;
+    notifyListeners();
+    try {
+      await _bookingService.createBooking(
+        token: token,
+        vendorId: vendorId,
+        serviceId: serviceId,
+        date: date,
+        time: time,
+      );
+      return true;
+    } catch (e) {
+      debugPrint("Booking Error: $e");
+      return false;
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
 }
+

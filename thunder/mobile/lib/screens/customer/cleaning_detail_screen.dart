@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "vendor_list_screen.dart";
 
 class CleaningDetailScreen extends StatefulWidget {
   const CleaningDetailScreen({super.key});
@@ -13,10 +14,27 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
   final List<String> _frequencies = ["One-time", "Weekly", "Monthly", "Yearly"];
   String _selectedFrequency = "One-time";
 
+  // Track selected services
+  final Set<String> _selectedServiceTitles = {};
+  int _totalPrice = 0;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+  }
+
+  void _toggleService(String title, String priceStr) {
+    setState(() {
+      final price = int.parse(priceStr.replaceAll(RegExp(r"[^0-9]"), ""));
+      if (_selectedServiceTitles.contains(title)) {
+        _selectedServiceTitles.remove(title);
+        _totalPrice -= price;
+      } else {
+        _selectedServiceTitles.add(title);
+        _totalPrice += price;
+      }
+    });
   }
 
   @override
@@ -128,7 +146,7 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
         _buildServiceItem(
           title: "Full Home Cleaning",
           subtitle: "Deep cleaning of rooms, kitchen, and bathrooms",
-          price: "₹1,999",
+          price: "₹1999",
           icon: Icons.home,
         ),
         _buildServiceItem(
@@ -201,54 +219,58 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
     required IconData icon,
     bool isPremium = false,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isPremium ? Colors.indigo.withOpacity(0.05) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isPremium ? Colors.indigo.withOpacity(0.2) : Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isPremium ? Colors.indigo.withOpacity(0.1) : Colors.grey.shade100,
-              shape: BoxShape.circle,
+    final isSelected = _selectedServiceTitles.contains(title);
+    return GestureDetector(
+      onTap: () => _toggleService(title, price),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.indigo.withOpacity(0.1) : (isPremium ? Colors.indigo.withOpacity(0.05) : Colors.white),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isSelected ? Colors.indigo : (isPremium ? Colors.indigo.withOpacity(0.2) : Colors.grey.shade200), width: isSelected ? 2 : 1),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.indigo : (isPremium ? Colors.indigo.withOpacity(0.1) : Colors.grey.shade100),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: isSelected ? Colors.white : (isPremium ? Colors.indigo : Colors.grey.shade700), size: 20),
             ),
-            child: Icon(icon, color: isPremium ? Colors.indigo : Colors.grey.shade700, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                    if (isPremium) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(4)),
-                        child: const Text("BEST VALUE", style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white)),
-                      ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      if (isPremium) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(4)),
+                          child: const Text("BEST VALUE", style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-                if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                  ),
+                  if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(price, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.black)),
+                Text(isSelected ? "Added" : "Add", style: TextStyle(color: isSelected ? Colors.green : Colors.indigo, fontWeight: FontWeight.bold, fontSize: 12)),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(price, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.black)),
-              const Text("Add", style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold, fontSize: 12)),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -262,18 +284,29 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
       ),
       child: Row(
         children: [
-          const Column(
+          Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Price", style: TextStyle(color: Colors.grey, fontSize: 12)),
-              Text("₹0", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text("Total Price", style: TextStyle(color: Colors.grey, fontSize: 12)),
+              Text("₹$_totalPrice", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(width: 24),
           Expanded(
             child: FilledButton(
-              onPressed: () {},
+              onPressed: _selectedServiceTitles.isEmpty
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VendorListScreen(
+                            selectedServices: _selectedServiceTitles.toList(),
+                          ),
+                        ),
+                      );
+                    },
               style: FilledButton.styleFrom(
                 minimumSize: const Size(double.infinity, 54),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

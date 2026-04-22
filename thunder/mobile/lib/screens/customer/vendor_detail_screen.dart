@@ -4,8 +4,9 @@ import "booking_screen.dart";
 
 class VendorDetailScreen extends StatelessWidget {
   final VendorModel vendor;
+  final List<String>? selectedServices;
 
-  const VendorDetailScreen({super.key, required this.vendor});
+  const VendorDetailScreen({super.key, required this.vendor, this.selectedServices});
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +85,21 @@ class VendorDetailScreen extends StatelessWidget {
             _buildServiceItem(context, "Standard Service", "₹499"),
             _buildServiceItem(context, "Premium / Deep Service", "₹899"),
             
+            if (selectedServices != null && selectedServices!.isNotEmpty) ...[
+              const SizedBox(height: 32),
+              Text("Your Selection", style: theme.textTheme.titleLarge),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                children: selectedServices!
+                    .map((s) => Chip(
+                          label: Text(s, style: const TextStyle(fontSize: 12)),
+                          backgroundColor: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                        ))
+                    .toList(),
+              ),
+            ],
+            
             const SizedBox(height: 40),
           ],
         ),
@@ -99,13 +115,19 @@ class VendorDetailScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => BookingScreen(vendor: vendor)),
+            MaterialPageRoute(
+              builder: (_) => BookingScreen(
+                vendor: vendor,
+                selectedServices: selectedServices,
+              ),
+            ),
           ),
           child: const Text("Book Now"),
         ),
       ),
     );
   }
+
 
   Widget _buildMetric(IconData icon, String value, String label) {
     return Column(
