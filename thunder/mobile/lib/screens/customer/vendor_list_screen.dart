@@ -6,7 +6,9 @@ import "../../widgets/vendor_card.dart";
 import "vendor_detail_screen.dart";
 
 class VendorListScreen extends StatelessWidget {
-  const VendorListScreen({super.key});
+  final List<String>? selectedServices;
+  const VendorListScreen({super.key, this.selectedServices});
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +44,13 @@ class VendorListScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => VendorDetailScreen(vendor: vendor),
+                      builder: (_) => VendorDetailScreen(
+                        vendor: vendor,
+                        selectedServices: selectedServices,
+                      ),
                     ),
                   ),
+
                 );
               },
             ),

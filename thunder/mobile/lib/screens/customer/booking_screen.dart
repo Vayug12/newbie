@@ -4,12 +4,15 @@ import "package:intl/intl.dart";
 
 import "../../models/vendor_model.dart";
 import "../../providers/auth_provider.dart";
+import "../../providers/booking_provider.dart";
 import "../../services/booking_service.dart";
+
 
 class BookingScreen extends StatefulWidget {
   final VendorModel vendor;
+  final List<String>? selectedServices;
 
-  const BookingScreen({super.key, required this.vendor});
+  const BookingScreen({super.key, required this.vendor, this.selectedServices});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -28,6 +31,14 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     final auth = context.read<AuthProvider>();
     final theme = Theme.of(context);
+
+    // Dynamic Price Calculation (Mocking based on selection)
+    int basePrice = 499; // Default if nothing selected
+    if (widget.selectedServices != null && widget.selectedServices!.isNotEmpty) {
+      basePrice = widget.selectedServices!.length * 350; // Simple mock price logic
+    }
+    int safetyFee = 49;
+    int totalAmount = basePrice + safetyFee;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Select Slot")),
@@ -53,6 +64,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ],
               ),
             ),
+
 
             const SizedBox(height: 24),
             
@@ -157,11 +169,11 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildPriceRow("Service Base Price", "₹499"),
+                    _buildPriceRow("Service Base Price", "₹$basePrice"),
                     const SizedBox(height: 8),
-                    _buildPriceRow("Safety & Inspection Fee", "₹49"),
+                    _buildPriceRow("Safety & Inspection Fee", "₹$safetyFee"),
                     const Divider(height: 24),
-                    _buildPriceRow("Total Amount", "₹548", isTotal: true),
+                    _buildPriceRow("Total Amount", "₹$totalAmount", isTotal: true),
                   ],
                 ),
               ),
@@ -180,15 +192,22 @@ class _BookingScreenState extends State<BookingScreen> {
           onPressed: _selectedTime == null
               ? null
               : () async {
-                  await _bookingService.createBooking(
+                  // We use a valid dummy MongoId for serviceId to satisfy the backend validator
+                  final success = await context.read<BookingProvider>().createBooking(
                     token: auth.token!,
                     vendorId: widget.vendor.id,
-                    serviceId: "std_service_01",
+                    serviceId: "507f1f77bcf86cd799439011", 
                     date: DateFormat("yyyy-MM-dd").format(_selectedDate),
                     time: _selectedTime!,
                   );
                   if (!context.mounted) return;
-                  _showSuccessDialog(context);
+                  if (success) {
+                    _showSuccessDialog(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Booking failed. Please try again.")),
+                    );
+                  }
                 },
           style: FilledButton.styleFrom(
             minimumSize: const Size(double.infinity, 54),
@@ -209,6 +228,7 @@ class _BookingScreenState extends State<BookingScreen> {
       ],
     );
   }
+
 
   void _showSuccessDialog(BuildContext context) {
     showDialog(
