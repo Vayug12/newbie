@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "../../providers/auth_provider.dart";
-import "otp_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,22 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: auth.loading
-                    ? null
-                    : () async {
-                        final otp = await context.read<AuthProvider>().sendOtp(_phoneController.text.trim());
-                        if (!context.mounted) return;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => OtpScreen(phone: _phoneController.text.trim(), devOtp: otp),
-                          ),
-                        );
-                      },
-                child: Text(auth.loading ? "Sending..." : "Send OTP"),
-              ),
-            )
-          ],
+                      onPressed: auth.loading
+                          ? null
+                          : () async {
+                              await context.read<AuthProvider>().loginDirectly(_phoneController.text.trim());
+                            },
+                      child: Text(auth.loading ? "Logging in..." : "Next"),
+                    ),
+                  )
+                ],
         ),
       ),
     );
