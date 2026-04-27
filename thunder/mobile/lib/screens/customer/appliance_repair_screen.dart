@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "booking_screen.dart";
 
 class ApplianceRepairScreen extends StatefulWidget {
   final String initialCategory;
@@ -11,7 +10,6 @@ class ApplianceRepairScreen extends StatefulWidget {
 
 class _ApplianceRepairScreenState extends State<ApplianceRepairScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final Set<String> _selectedItems = {};
   
   final List<String> _plans = ["Standard", "Weekly Checkup", "Monthly Maintenance", "Annual Plan"];
   String _selectedPlan = "Standard";
@@ -41,16 +39,6 @@ class _ApplianceRepairScreenState extends State<ApplianceRepairScreen> with Sing
     super.dispose();
   }
 
-  void _toggleService(String title) {
-    setState(() {
-      if (_selectedItems.contains(title)) {
-        _selectedItems.remove(title);
-      } else {
-        _selectedItems.add(title);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -68,7 +56,7 @@ class _ApplianceRepairScreenState extends State<ApplianceRepairScreen> with Sing
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1000",
+                    "https://images.unsplash.com/photo-1581092921461-7d156820ef3c?auto=format&fit=crop&q=80&w=1000",
                     fit: BoxFit.cover,
                   ),
                   Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withOpacity(0.7)]))),
@@ -246,35 +234,25 @@ class _ApplianceRepairScreenState extends State<ApplianceRepairScreen> with Sing
   }
 
   Widget _buildServiceItem({required String title, String? subtitle, required String price, required IconData icon}) {
-    final isSelected = _selectedItems.contains(title);
-    return InkWell(
-      onTap: () => _toggleService(title),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.withOpacity(0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade100, width: isSelected ? 2 : 1),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: isSelected ? Colors.blue : Colors.blueGrey, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-                ],
-              ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey.shade100)),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.blueGrey, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+              ],
             ),
-            if (isSelected) const Icon(Icons.check_circle, color: Colors.blue, size: 20),
-            if (!isSelected) Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-          ],
-        ),
+          ),
+          Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+        ],
       ),
     );
   }
@@ -284,18 +262,9 @@ class _ApplianceRepairScreenState extends State<ApplianceRepairScreen> with Sing
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 48),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
       child: FilledButton(
-        onPressed: _selectedItems.isEmpty ? null : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BookingScreen(
-                selectedServices: _selectedItems.toList(),
-              ),
-            ),
-          );
-        },
+        onPressed: () {},
         style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        child: Text(_selectedItems.isEmpty ? "Continue" : "Continue with ${_selectedItems.length} items", style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: const Text("Continue", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "vendor_list_screen.dart";
-import "booking_screen.dart";
 
 class CleaningDetailScreen extends StatefulWidget {
   const CleaningDetailScreen({super.key});
@@ -61,7 +60,7 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&q=80&w=1000",
+                    "https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=1000",
                     fit: BoxFit.cover,
                   ),
                   Container(
@@ -85,11 +84,9 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
                 children: [
                   Icon(Icons.info_outline, size: 14, color: Colors.blue),
                   SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Prices may vary based on your location (Saket, New Delhi)",
-                      style: TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.w500),
-                    ),
+                  Text(
+                    "Prices may vary based on your location (Saket, New Delhi)",
+                    style: TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -304,7 +301,7 @@ class _CleaningDetailScreenState extends State<CleaningDetailScreen> with Single
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => BookingScreen(
+                          builder: (_) => VendorListScreen(
                             selectedServices: _selectedServiceTitles.toList(),
                           ),
                         ),

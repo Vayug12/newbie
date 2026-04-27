@@ -1,25 +1,7 @@
 import "package:flutter/material.dart";
-import "vendor_list_screen.dart";
 
-class CarpenterDetailScreen extends StatefulWidget {
+class CarpenterDetailScreen extends StatelessWidget {
   const CarpenterDetailScreen({super.key});
-
-  @override
-  State<CarpenterDetailScreen> createState() => _CarpenterDetailScreenState();
-}
-
-class _CarpenterDetailScreenState extends State<CarpenterDetailScreen> {
-  final Set<String> _selectedItems = {};
-
-  void _toggleService(String title) {
-    setState(() {
-      if (_selectedItems.contains(title)) {
-        _selectedItems.remove(title);
-      } else {
-        _selectedItems.add(title);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,35 +71,25 @@ class _CarpenterDetailScreenState extends State<CarpenterDetailScreen> {
   }
 
   Widget _buildServiceItem({required String title, String? subtitle, required String price, required IconData icon}) {
-    final isSelected = _selectedItems.contains(title);
-    return InkWell(
-      onTap: () => _toggleService(title),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.brown.withOpacity(0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Colors.brown : Colors.grey.shade100, width: isSelected ? 2 : 1),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: isSelected ? Colors.brown : Colors.brown.shade400, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-                ],
-              ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey.shade100)),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.brown.shade400, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+              ],
             ),
-            if (isSelected) const Icon(Icons.check_circle, color: Colors.brown, size: 22),
-            if (!isSelected) Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.brown)),
-          ],
-        ),
+          ),
+          Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.brown)),
+        ],
       ),
     );
   }
@@ -127,16 +99,9 @@ class _CarpenterDetailScreenState extends State<CarpenterDetailScreen> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 48),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
       child: FilledButton(
-        onPressed: _selectedItems.isEmpty ? null : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => VendorListScreen(selectedServices: _selectedItems.toList()),
-            ),
-          );
-        },
+        onPressed: () {},
         style: FilledButton.styleFrom(backgroundColor: Colors.brown, minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        child: Text(_selectedItems.isEmpty ? "Continue" : "Continue with ${_selectedItems.length} items", style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: const Text("Continue", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

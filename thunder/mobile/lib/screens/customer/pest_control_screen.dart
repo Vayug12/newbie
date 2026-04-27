@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "vendor_list_screen.dart";
 
 class PestControlScreen extends StatefulWidget {
   const PestControlScreen({super.key});
@@ -11,22 +10,11 @@ class PestControlScreen extends StatefulWidget {
 class _PestControlScreenState extends State<PestControlScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _includeUtensilRemoval = false;
-  final Set<String> _selectedItems = {};
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }
-
-  void _toggleService(String title) {
-    setState(() {
-      if (_selectedItems.contains(title)) {
-        _selectedItems.remove(title);
-      } else {
-        _selectedItems.add(title);
-      }
-    });
   }
 
   @override
@@ -169,35 +157,25 @@ class _PestControlScreenState extends State<PestControlScreen> with SingleTicker
   }
 
   Widget _buildServiceItem({required String title, String? subtitle, required String price, required IconData icon}) {
-    final isSelected = _selectedItems.contains(title);
-    return InkWell(
-      onTap: () => _toggleService(title),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.green.withOpacity(0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Colors.green : Colors.grey.shade100, width: isSelected ? 2 : 1),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: isSelected ? Colors.green : Colors.green.shade700, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-                ],
-              ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey.shade100)),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.green.shade700, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+              ],
             ),
-            if (isSelected) const Icon(Icons.check_circle, color: Colors.green, size: 22),
-            if (!isSelected) Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-          ],
-        ),
+          ),
+          Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+        ],
       ),
     );
   }
@@ -207,16 +185,9 @@ class _PestControlScreenState extends State<PestControlScreen> with SingleTicker
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 48),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
       child: FilledButton(
-        onPressed: _selectedItems.isEmpty ? null : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => VendorListScreen(selectedServices: _selectedItems.toList()),
-            ),
-          );
-        },
+        onPressed: () {},
         style: FilledButton.styleFrom(backgroundColor: Colors.green, minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        child: Text(_selectedItems.isEmpty ? "Book Now" : "Continue with ${_selectedItems.length} items", style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: const Text("Book Now", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

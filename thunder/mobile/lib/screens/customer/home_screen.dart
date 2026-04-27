@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "../../providers/vendor_provider.dart";
-import "../../providers/location_provider.dart";
 import "../../widgets/category_item.dart";
 import "../../widgets/promo_banner.dart";
 import "../../widgets/search_field.dart";
@@ -39,11 +38,9 @@ class CustomerHomeScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.location_on, color: theme.colorScheme.primary, size: 20),
                       const SizedBox(width: 8),
-                      Consumer<LocationProvider>(
-                        builder: (context, location, child) => Text(
-                          location.currentAddress,
-                          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-                        ),
+                      Text(
+                        "Home - Saket, New Delhi",
+                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const Icon(Icons.keyboard_arrow_down, size: 18),
                     ],
@@ -119,7 +116,7 @@ class CustomerHomeScreen extends StatelessWidget {
                     crossAxisCount: 4,
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.7,
+                    childAspectRatio: 0.8,
                     children: [
                       CategoryItem(
                         label: "Cleaning",

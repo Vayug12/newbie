@@ -23,7 +23,6 @@ class CategoryItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -36,17 +35,15 @@ class CategoryItem extends StatelessWidget {
             child: Icon(icon, color: primaryColor, size: 28),
           ),
           const SizedBox(height: 8),
-          Expanded(
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

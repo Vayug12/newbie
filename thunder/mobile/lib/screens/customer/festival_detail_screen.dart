@@ -1,25 +1,7 @@
 import "package:flutter/material.dart";
-import "vendor_list_screen.dart";
 
-class FestivalDetailScreen extends StatefulWidget {
+class FestivalDetailScreen extends StatelessWidget {
   const FestivalDetailScreen({super.key});
-
-  @override
-  State<FestivalDetailScreen> createState() => _FestivalDetailScreenState();
-}
-
-class _FestivalDetailScreenState extends State<FestivalDetailScreen> {
-  final Set<String> _selectedItems = {};
-
-  void _toggleService(String title) {
-    setState(() {
-      if (_selectedItems.contains(title)) {
-        _selectedItems.remove(title);
-      } else {
-        _selectedItems.add(title);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,39 +66,29 @@ class _FestivalDetailScreenState extends State<FestivalDetailScreen> {
   }
 
   Widget _buildServiceItem({required String title, String? subtitle, required String price, required IconData icon}) {
-    final isSelected = _selectedItems.contains(title);
-    return InkWell(
-      onTap: () => _toggleService(title),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.orange.withOpacity(0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Colors.orange : Colors.grey.shade100, width: isSelected ? 2 : 1),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: isSelected ? Colors.orange.withOpacity(0.1) : Colors.orange.withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: Colors.orange, size: 24),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey.shade100)),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: Colors.orange, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  if (subtitle != null) Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-                ],
-              ),
-            ),
-            if (isSelected) const Icon(Icons.check_circle, color: Colors.orange, size: 22),
-            if (!isSelected) Text(price, style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.black)),
-          ],
-        ),
+          ),
+          Text(price, style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.black)),
+        ],
       ),
     );
   }
@@ -126,16 +98,9 @@ class _FestivalDetailScreenState extends State<FestivalDetailScreen> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 48),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
       child: FilledButton(
-        onPressed: _selectedItems.isEmpty ? null : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => VendorListScreen(selectedServices: _selectedItems.toList()),
-            ),
-          );
-        },
+        onPressed: () {},
         style: FilledButton.styleFrom(backgroundColor: Colors.orange, minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        child: Text(_selectedItems.isEmpty ? "Book Now" : "Continue with ${_selectedItems.length} items", style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: const Text("Book Now", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

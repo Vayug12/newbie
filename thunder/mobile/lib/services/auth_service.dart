@@ -14,7 +14,4 @@ class AuthService {
     });
   }
 
-  Future<Map<String, dynamic>> getMe(String token) {
-    return ApiClient.get(ApiEndpoints.me, token: token);
-  }
 }

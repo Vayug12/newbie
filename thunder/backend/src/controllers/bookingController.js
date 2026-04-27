@@ -165,15 +165,8 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
   if (!booking) return apiResponse(res, 404, null, "Booking not found");
 
   const nextStatus = req.body.status;
-  const getUserId = (user) => (user?._id || user)?.toString();
-  
-  const isCustomer = getUserId(booking.userId) === req.user._id.toString();
-  const isUnassigned = !booking.vendorId && req.user.activeMode === "vendor";
-  const isAssignedVendor = booking.vendorId && getUserId(booking.vendorId) === req.user._id.toString();
-
-  if (!isCustomer && !isAssignedVendor && !isUnassigned) {
-    return apiResponse(res, 403, null, "Not authorized to update this booking");
-  }
+  const isVendor = booking.vendorId._id.toString() === req.user._id.toString();
+  const isCustomer = booking.userId._id.toString() === req.user._id.toString();
 
   // If it was unassigned and a vendor is accepting, assign it to them
   if (isUnassigned && nextStatus === "accepted") {
@@ -235,6 +228,48 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
 
   // Send to Vendor
   if (vendorTitle && booking.vendorId && booking.vendorId.fcmToken) {
+    await sendPushNotification({
+      token: booking.vendorId.fcmToken,
+      title: vendorTitle,
+      body: vendorBody,
+      data: { bookingId: booking._id.toString(), status: nextStatus }
+    });
+  }
+
+  // Notifications for status updates
+  let customerTitle = "";
+  let customerBody = "";
+  let vendorTitle = "";
+  let vendorBody = "";
+
+  if (nextStatus === "accepted") {
+    customerTitle = "Booking Accepted!";
+    customerBody = `Your booking for ${booking.serviceId.name} has been accepted by ${booking.vendorId.name}.`;
+  } else if (nextStatus === "rejected") {
+    customerTitle = "Booking Rejected";
+    customerBody = `Sorry, your booking for ${booking.serviceId.name} was rejected.`;
+  } else if (nextStatus === "completed") {
+    customerTitle = "Service Completed";
+    customerBody = `Your service for ${booking.serviceId.name} is marked as completed. Thank you!`;
+    vendorTitle = "Booking Completed";
+    vendorBody = `You have completed the service for ${booking.userId.name}.`;
+  } else if (nextStatus === "cancelled") {
+    vendorTitle = "Booking Cancelled";
+    vendorBody = `The booking for ${booking.serviceId.name} has been cancelled by the customer.`;
+  }
+
+  // Send to Customer
+  if (customerTitle) {
+    await sendPushNotification({
+      token: booking.userId.fcmToken,
+      title: customerTitle,
+      body: customerBody,
+      data: { bookingId: booking._id.toString(), status: nextStatus }
+    });
+  }
+
+  // Send to Vendor
+  if (vendorTitle) {
     await sendPushNotification({
       token: booking.vendorId.fcmToken,
       title: vendorTitle,

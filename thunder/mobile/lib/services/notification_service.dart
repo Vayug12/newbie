@@ -22,9 +22,8 @@ class NotificationService {
       log("User declined or has not accepted permission");
     }
 
-    // 2. Get Token & Subscribe to Global Topic
+    // 2. Get Token
     String? token = await _fcm.getToken();
-    await _fcm.subscribeToTopic("all_users");
     log("FCM Token: $token");
 
     // 3. Handle Foreground Messages

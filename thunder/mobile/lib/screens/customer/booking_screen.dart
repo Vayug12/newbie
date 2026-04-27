@@ -9,11 +9,12 @@ import "../../services/booking_service.dart";
 import "booking_success_screen.dart";
 
 
+
 class BookingScreen extends StatefulWidget {
-  final VendorModel? vendor;
+  final VendorModel vendor;
   final List<String>? selectedServices;
 
-  const BookingScreen({super.key, this.vendor, this.selectedServices});
+  const BookingScreen({super.key, required this.vendor, this.selectedServices});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -58,8 +59,8 @@ class _BookingScreenState extends State<BookingScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.vendor?.name ?? "Broadcast Request", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                      Text(widget.vendor?.specialization ?? "Visible to all nearby professionals", style: theme.textTheme.bodySmall),
+                      Text(widget.vendor.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(widget.vendor.specialization, style: theme.textTheme.bodySmall),
                     ],
                   ),
                 ],
@@ -180,6 +181,84 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
             const SizedBox(height: 40),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        ),
+        child: FilledButton(
+          onPressed: _selectedTime == null
+              ? null
+              : () async {
+                  // We use a valid dummy MongoId for serviceId to satisfy the backend validator
+                  final success = await context.read<BookingProvider>().createBooking(
+                    token: auth.token!,
+                    vendorId: widget.vendor.id,
+                    serviceId: "507f1f77bcf86cd799439011", 
+                    date: DateFormat("yyyy-MM-dd").format(_selectedDate),
+                    time: _selectedTime!,
+                  );
+                  if (!context.mounted) return;
+                  if (success) {
+                    _showSuccessDialog(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Booking failed. Please try again.")),
+                    );
+                  }
+                },
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 54),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          child: const Text("Confirm & Schedule", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, String value, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontWeight: isTotal ? FontWeight.bold : FontWeight.normal, fontSize: isTotal ? 16 : 14)),
+        Text(value, style: TextStyle(fontWeight: isTotal ? FontWeight.bold : FontWeight.normal, fontSize: isTotal ? 16 : 14, color: isTotal ? Colors.black : Colors.blueGrey)),
+      ],
+    );
+  }
+
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            const Icon(Icons.check_circle, color: Colors.green, size: 80),
+            const SizedBox(height: 24),
+            const Text("Booking Confirmed!", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text("Professional will arrive on ${DateFormat("MMM dd").format(_selectedDate)} at $_selectedTime", textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(context); // Back to vendor details
+                  Navigator.pop(context); // Back to home or list
+                },
+                child: const Text("Back to Home"),
+              ),
+            ),
           ],
         ),
       ),

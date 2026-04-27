@@ -56,10 +56,7 @@ class _MainShellState extends State<MainShell> {
           )
         ],
       ),
-      body: IndexedStack(
-        index: _index.clamp(0, tabs.length - 1),
-        children: tabs,
-      ),
+      body: tabs[_index.clamp(0, tabs.length - 1)],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
